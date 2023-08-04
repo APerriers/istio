@@ -1,0 +1,16 @@
+GOARCH=amd64;GOOS=linux
+docker build -t istio:v1.0.1 .
+docker.io/library/istio:v1.0.1
+172.30.6.33:3002/library/istio:v1.0.1
+
+docker tag istio:v1.0.2 172.30.6.33:3002/library/istio:v1.0.2
+docker push 172.30.6.33:3002/library/istio:v1.0.2
+
+手动注入 Envoy 边车代理
+istioctl kube-inject -f svc_api_apigw.yaml | kubectl apply -f -
+
+自动注入 Envoy 边车代理
+kubectl label namespace test-api istio-injection=enabled
+卸载：kubectl label namespace test-api istio-injection-
+
+helm install test-api-istio-ingress istio/gateway -n test-api --wait
